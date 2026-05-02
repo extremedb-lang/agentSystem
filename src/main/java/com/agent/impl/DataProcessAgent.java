@@ -7,6 +7,8 @@ import com.agent.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.agent.util.Maps;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -239,7 +241,7 @@ public class DataProcessAgent extends Agent {
                         boolean required = (boolean) rule.getOrDefault("required", false);
                         Object value = ((Map<String, Object>) item).get(field);
                         if (required && value == null) {
-                            errors.add(Map.of("index", i, "field", field, "error", "Required field missing"));
+                            errors.add(Maps.of(Maps.entry("index", i), Maps.entry("field", field), Maps.entry("error", "Required field missing")));
                             valid = false;
                         }
                     }

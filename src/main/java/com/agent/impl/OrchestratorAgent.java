@@ -11,6 +11,8 @@ import com.agent.workflow.WorkflowStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.agent.util.Maps;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -128,10 +130,10 @@ public class OrchestratorAgent extends Agent {
         try {
             String executionId = workflowEngine.execute(workflowId, variables);
             executionHistory.put(workflowId, executionId);
-            return TaskResult.success(getId(), task.getId(), Map.of(
-                    "workflowId", workflowId,
-                    "executionId", executionId,
-                    "status", "started"
+            return TaskResult.success(getId(), task.getId(), Maps.of(
+                    Maps.entry("workflowId", workflowId),
+                    Maps.entry("executionId", executionId),
+                    Maps.entry("status", "started")
             ));
         } catch (Exception e) {
             return TaskResult.failure(getId(), task.getId(), e.getMessage());
@@ -156,7 +158,7 @@ public class OrchestratorAgent extends Agent {
         TaskResult createResult = createWorkflow(createConfig, task);
         if (!createResult.isSuccess()) return createResult;
 
-        return executeWorkflow(Map.of("workflowId", workflowId), task);
+        return executeWorkflow(Collections.singletonMap("workflowId", workflowId), task);
     }
 
     private void handleAlert(Message message) {
@@ -177,11 +179,11 @@ public class OrchestratorAgent extends Agent {
         Workflow dataPipeline = Workflow.of("data-pipeline", "Data Processing Pipeline")
                 .withDescription("Validates, transforms, and aggregates data")
                 .addStep(WorkflowStep.agentTask("validate", "Validate Input Data", "data-process",
-                        Map.of("operation", "validate")))
+                        Collections.singletonMap("operation", "validate")))
                 .addStep(WorkflowStep.agentTask("transform", "Transform Data", "data-process",
-                        Map.of("operation", "transform")))
+                        Collections.singletonMap("operation", "transform")))
                 .addStep(WorkflowStep.agentTask("aggregate", "Aggregate Results", "data-process",
-                        Map.of("operation", "aggregate")));
+                        Collections.singletonMap("operation", "aggregate")));
 
         workflowEngine.registerWorkflow(dataPipeline);
     }

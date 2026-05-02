@@ -6,6 +6,8 @@ import com.agent.workflow.WorkflowStep;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.agent.util.Maps;
+
 import java.util.*;
 
 @RestController
@@ -26,7 +28,7 @@ public class WorkflowController {
         List<Map<String, Object>> stepConfigs = (List<Map<String, Object>>) request.get("steps");
 
         if (id == null || name == null || stepConfigs == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "id, name, and steps are required"));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "id, name, and steps are required"));
         }
 
         Workflow workflow = Workflow.of(id, name);
@@ -53,7 +55,7 @@ public class WorkflowController {
                     step = WorkflowStep.condition(stepId, stepName, stepConfig);
                     break;
                 default:
-                    return ResponseEntity.badRequest().body(Map.of("error", "Unknown step type: " + stepType));
+                    return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Unknown step type: " + stepType));
             }
             workflow.addStep(step);
         }
@@ -72,10 +74,10 @@ public class WorkflowController {
                 variables = (Map<String, Object>) request.get("variables");
             }
             String executionId = workflowEngine.execute(workflowId, variables);
-            return ResponseEntity.ok(Map.of(
-                    "workflowId", workflowId,
-                    "executionId", executionId,
-                    "status", "started"
+            return ResponseEntity.ok(Maps.of(
+                    Maps.entry("workflowId", workflowId),
+                    Maps.entry("executionId", executionId),
+                    Maps.entry("status", "started")
             ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

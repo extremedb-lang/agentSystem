@@ -7,6 +7,8 @@ import com.agent.task.TaskResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.agent.util.Maps;
+
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -52,10 +54,10 @@ public class TaskController {
         Task task = Task.of(name, agentType, payload);
         CompletableFuture<TaskResult> future = taskScheduler.submitAsync(task);
 
-        return ResponseEntity.ok(Map.of(
-                "taskId", task.getId(),
-                "status", "submitted",
-                "message", "Task submitted asynchronously"
+        return ResponseEntity.ok(Maps.of(
+                Maps.entry("taskId", task.getId()),
+                Maps.entry("status", "submitted"),
+                Maps.entry("message", "Task submitted asynchronously")
         ));
     }
 
@@ -69,11 +71,11 @@ public class TaskController {
         Task task = Task.of(name, agentType, payload);
         String taskId = taskScheduler.submitScheduled(task, delayMs);
 
-        return ResponseEntity.ok(Map.of(
-                "taskId", taskId,
-                "status", "scheduled",
-                "delayMs", delayMs,
-                "message", "Task scheduled"
+        return ResponseEntity.ok(Maps.of(
+                Maps.entry("taskId", taskId),
+                Maps.entry("status", "scheduled"),
+                Maps.entry("delayMs", delayMs),
+                Maps.entry("message", "Task scheduled")
         ));
     }
 
@@ -88,12 +90,12 @@ public class TaskController {
         Task task = Task.of(name, agentType, payload);
         String taskId = taskScheduler.submitRecurring(task, initialDelayMs, periodMs);
 
-        return ResponseEntity.ok(Map.of(
-                "taskId", taskId,
-                "status", "recurring",
-                "initialDelayMs", initialDelayMs,
-                "periodMs", periodMs,
-                "message", "Recurring task scheduled"
+        return ResponseEntity.ok(Maps.of(
+                Maps.entry("taskId", taskId),
+                Maps.entry("status", "recurring"),
+                Maps.entry("initialDelayMs", initialDelayMs),
+                Maps.entry("periodMs", periodMs),
+                Maps.entry("message", "Recurring task scheduled")
         ));
     }
 
@@ -103,9 +105,9 @@ public class TaskController {
         if (!cancelled) {
             cancelled = taskQueue.cancel(taskId);
         }
-        return ResponseEntity.ok(Map.of(
-                "taskId", taskId,
-                "cancelled", cancelled
+        return ResponseEntity.ok(Maps.of(
+                Maps.entry("taskId", taskId),
+                Maps.entry("cancelled", cancelled)
         ));
     }
 

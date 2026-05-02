@@ -12,6 +12,8 @@ import com.agent.workflow.WorkflowEngine;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.agent.util.Maps;
+
 import java.util.*;
 
 @RestController
@@ -32,7 +34,7 @@ public class AgentController {
         String type = request.get("type");
 
         if (name == null || type == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "name and type are required"));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "name and type are required"));
         }
 
         Agent agent;
@@ -50,17 +52,17 @@ public class AgentController {
                 agent = new OrchestratorAgent(name, agentManager, workflowEngine);
                 break;
             default:
-                return ResponseEntity.badRequest().body(Map.of("error", "Unknown agent type: " + type));
+                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Unknown agent type: " + type));
         }
 
         agentManager.register(agent);
         agent.start();
 
-        return ResponseEntity.ok(Map.of(
-                "id", agent.getId(),
-                "name", agent.getName(),
-                "type", agent.getType(),
-                "status", agent.getStatus().name()
+        return ResponseEntity.ok(Maps.of(
+                Maps.entry("id", agent.getId()),
+                Maps.entry("name", agent.getName()),
+                Maps.entry("type", agent.getType()),
+                Maps.entry("status", agent.getStatus().name())
         ));
     }
 
@@ -84,28 +86,28 @@ public class AgentController {
     public ResponseEntity<Map<String, Object>> startAgent(@PathVariable String id) {
         Agent agent = agentManager.startAgent(id);
         if (agent == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(Map.of("id", id, "status", agent.getStatus().name()));
+        return ResponseEntity.ok(Maps.of(Maps.entry("id", id), Maps.entry("status", agent.getStatus().name())));
     }
 
     @PostMapping("/{id}/stop")
     public ResponseEntity<Map<String, Object>> stopAgent(@PathVariable String id) {
         Agent agent = agentManager.stopAgent(id);
         if (agent == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(Map.of("id", id, "status", agent.getStatus().name()));
+        return ResponseEntity.ok(Maps.of(Maps.entry("id", id), Maps.entry("status", agent.getStatus().name())));
     }
 
     @PostMapping("/{id}/pause")
     public ResponseEntity<Map<String, Object>> pauseAgent(@PathVariable String id) {
         Agent agent = agentManager.pauseAgent(id);
         if (agent == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(Map.of("id", id, "status", agent.getStatus().name()));
+        return ResponseEntity.ok(Maps.of(Maps.entry("id", id), Maps.entry("status", agent.getStatus().name())));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> unregisterAgent(@PathVariable String id) {
         Agent agent = agentManager.unregister(id);
         if (agent == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(Map.of("message", "Agent unregistered: " + id));
+        return ResponseEntity.ok(Collections.singletonMap("message", "Agent unregistered: " + id));
     }
 
     @PostMapping("/{id}/execute")

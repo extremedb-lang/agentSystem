@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.RuntimeMXBean;
+import com.agent.util.Maps;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,10 +49,10 @@ public class HealthController {
         health.put("system", system);
 
         health.put("agents", agentManager.getSystemStats());
-        health.put("messages", Map.of(
-                "totalProcessed", messageBus.getMessageCount(),
-                "topics", messageBus.getTopics().size(),
-                "deadLetters", messageBus.getDeadLetters().size()
+        health.put("messages", Maps.of(
+                Maps.entry("totalProcessed", messageBus.getMessageCount()),
+                Maps.entry("topics", messageBus.getTopics().size()),
+                Maps.entry("deadLetters", messageBus.getDeadLetters().size())
         ));
         health.put("tasks", taskScheduler.getSchedulerStats());
         health.put("workflows", workflowEngine.getEngineStats());
