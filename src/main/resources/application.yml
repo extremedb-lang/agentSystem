@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: multi-agent-system
+
+agent:
+  system:
+    name: Multi-Agent Operations System
+    version: 1.0.0
+    max-agents: 50
+    task-scheduler:
+      pool-size: 10
+      queue-capacity: 1000
+    message-bus:
+      buffer-size: 5000
+    workflow:
+      max-concurrent: 10
+
+logging:
+  level:
+    com.agent: INFO
+    org.springframework: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
